@@ -1,4 +1,4 @@
-#-------------------------------- randomForest VALIDATION AND ROC CURVES  ---------------------------------------------#
+#-------------------------------- randomForest VALIDATION   -------------------------------------------------------#
 
 # Rheumatoid arthritis is a inflammatory disease that characterized for not having a resolution phase in the inflammatory
 # procces. One of the most used treatments is Methotrexate (MTX), that is not always efective. 
