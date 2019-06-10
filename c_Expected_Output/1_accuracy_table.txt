@@ -1,0 +1,6 @@
+groups	percentage_accuracy
+scalated lm profiles	99.29
+DHA	100
+n-3 DPA	85.13
+EPA	96.15
+AA	99.74
