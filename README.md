@@ -33,8 +33,16 @@ For installing R and R Studio, follows the installation instructions [here](http
 
 The requiered packages to run all the scripts contained in this repository can be installed as follow: 
 
+The last version of classyfire (0.1-2) package can be found [here](https://cran.r-project.org/src/contrib/Archive/classyfire/)
+
 ```
-# Packages classyfire, randomForest and mltools:
+# Packages classyfire:
+# After download the last version of classyfire (0.1-2), you can install the package as follow, specifying the directory of the zip: 
+install.packages("C:pathToDirectory/classyfire_0.1-2.tar.gz", 
+                  repos = NULL, 
+                  type = "source")
+                  
+# Packages randomForest and mltools:
 install.packages(c('classyfire', 'randomForest', 'mltools'))
 
 # Package edgeR from Bioconductor:
