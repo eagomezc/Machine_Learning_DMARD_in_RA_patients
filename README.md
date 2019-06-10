@@ -8,7 +8,7 @@ Besides that, it also contains the scripts used for the validation step of the m
 
 Finally, it also contains a small script that was used to do the **differential gene expression analysis** of the ALOX12, ALOX5, ALOX15 and ALOX15B enzymes. 
 
-**NOTE:** **MetaboAnalyst web-based application** (more information [here](https://www.metaboanalyst.ca//faces/ModuleView.xhtml)) was used to perform some statistical analyses such as partial least squares-discrimination analysis (PLS-DA), orthagonal partial least squares-discrimination analysis (oPLS-DA), variance importance in projection analysis (VIP). For the network analyses, [**Cytoscape software**](https://cytoscape.org/) (version 3.7.1) was used.
+**NOTE:** **MetaboAnalyst web-based application** (more information [here](https://www.metaboanalyst.ca//faces/ModuleView.xhtml)) (version 4.0) was used to perform some statistical analyses such as partial least squares-discrimination analysis (PLS-DA), orthagonal partial least squares-discrimination analysis (oPLS-DA), variance importance in projection analysis (VIP). For the network analyses, [**Cytoscape software**](https://cytoscape.org/) (version 3.7.1) was used.
 
 # System Requierements: 
 
@@ -42,4 +42,8 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 BiocManager::install("edgeR")
 ```
+# Content: 
+
+The repository contains three folders: 
+
 
