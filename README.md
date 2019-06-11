@@ -23,6 +23,7 @@ A computer with lower specs (e.g. 2GB of RAM) will work but some scripts will ta
 All the R scripts were created and used on **Windows 10**:
 
 **R version**: 3.5.1 
+
 **R Studio version**: 1.1.456
 
 The scripts should be compatible with Mac and Linux operating systems. 
