@@ -61,7 +61,9 @@ This folder contains, separated by subfolders, the different file formats (as to
 The subfolders are:
 
 **1_classyfire_(SVM_models)**: Contains a tab-delimited table with the training dataset (Patients as columns and Lipid mediators as rows) and a tab-delimited table with the validation dataset (Patients as columns and Lipid mediators as rows).
+
 **2_randomForest_(RF_models)**: Contains a tab-delimited table with the training dataset (Patients as rows and Lipid mediators as columns) and a tab-delimited table with the validation dataset (Patients as rows and Lipid mediators as columns).
+
 **3_DGE_analysis_(Edge_R)**: Contains a tab-delimited table with the raw RNA-seq read counts (Patients as columns and interested genes as rows) and tab-delimited table with the classification information (Responder or Non Responder) of the patients (One column with patient IDs and one column with response class). 
 
 More details about the format of this files can be seen in the comments of each script. 
@@ -76,7 +78,7 @@ The scripts are:
 
 **2_randomForest_(RF_models).R**: Using a training dataset, this script creates the machine learning models used to predict the response to DMARD treatment in rheumatoid arthiritis patient. The script works with the package **randomForest** that uses random forests and bootstrapping for the model creation. Besides that, estimate the **importance** of each lipid mediator in the improvement of the model's accuracy. Finally, it also uses the a validation cohort to validate the models and estimate the MCC value. 
 
-**3_3_DGE_analysis_(Edge_R).R**: Using RNA-seq raw read counts, this scripts performs differential gene expression analysis using the package **Edge R**, that uses the quasi-likelihood method to identify differences in the expression levels of specific genes between the DMARD responder and Non Responder rheumatoid arthiritis patients. It also creates violin plots as a way to visualize the different gene expression levels. 
+**3_DGE_analysis_(Edge_R).R**: Using RNA-seq raw read counts, this scripts performs differential gene expression analysis using the package **Edge R**, that uses the quasi-likelihood method to identify differences in the expression levels of specific genes between the DMARD responder and Non Responder rheumatoid arthiritis patients. It also creates violin plots as a way to visualize the different gene expression levels. 
 
 More details of how the scripts works can be seen in the comments of each script. 
 
@@ -87,7 +89,9 @@ This folder contains, separated by subfolders, the different expected outputs th
 The subfolders are:
 
 **1_classyfire_(SVM_models)**: The expected results from this script are a tab-delimited file containing a table with the model's names, their accuracy percentages and their MCC values after validation with the validation cohort; and the different models saved as an R object that can be used in the future.  
+
 **2_randomForest_(RF_models)**: The expected results from this script are a tab-delimited file containing a table with the model's names, their accuracy percentages and their MCC values after validation with the validation cohort; the different models saved as an R object that can be used in the future; and pdf files that cointains plots associated with the performance of the models and the importance of each lipid mediator in the construction of the models. 
+
 **3_DGE_analysis_(Edge_R)**: The expected results from this script is a tab-delimited file containing a table with the gene's names, their log(FC), log(CPM), F value, *p* value and adjust *p* value (FDR). In addition, is expected to generate a pdf file with violin plots of ALOX-related enzymes. 
 
 More details about how this files are generated can be seen in the comments of each script. 
