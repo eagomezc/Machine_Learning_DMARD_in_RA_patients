@@ -1,0 +1,6 @@
+groups	percentage_accuracy	MCC
+scalated lm profiles	99.29	1
+DHA	100	1
+n-3 DPA	85.13	0.904534033733291
+EPA	96.15	0.904534033733291
+AA	99.74	1

@@ -11,10 +11,13 @@
 #---> LIBRARY LOAD:
 
 library(classyfire)
+library("mltools")
 
 #---> DATA MANIPULATION: 
 
 # TRAINING SET:
+
+# Data uses to create the model!
 
 # Open the txt file with the profiles information. Make sure that the path is correct:
 
@@ -24,10 +27,10 @@ library(classyfire)
 # otherwhise.
 # Following rows: All the lipid mediators used to create the model.
 
-# See a_Toy_Data/1_classyfire_(SVM models)_toy_data.txt
+# See a_Toy_Data/1_classyfire_(SVM_models)/1_classyfire_(SVM_models)_toy_data.txt
 
-lm_profile <- read.table(
- file = "GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/a_Toy_Data/1_classyfire_(SVM models)_toy_data.txt",
+lm_profiles <- read.table(
+ file = "GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/a_Toy_Data/1_classyfire_(SVM_models)/1_classyfire_(SVM_models)_toy_data.txt",
  header = TRUE,
  row.names = 1,
  sep = "\t")
@@ -41,7 +44,35 @@ n_three_DPA <- lm_profiles[26:35, ]
 epa <- lm_profiles[36:38, ]
 aa <- lm_profiles[39:56, ]
 
-#---> DATA PREPARATION:
+# VALIDATION SET:
+
+# Data use to test the model (independent cohort)!
+
+# Open the txt file with the profiles information. Make sure that the path is correct:
+
+# The dataset consist in a tab-delimited file in .txt format with the follow specifications: 
+# Columns: The different samples (each patient data)
+# Row number 1: Class row that contains the word "Responder" if the patient respond to treatment and "Non_Responder"
+# otherwhise.
+# Following rows: All the lipid mediators used to create the model (NOTE: They have to be in the same order as
+# the training dataset).
+
+# See a_Toy_Data/1_classyfire_(SVM_models)/2_classyfire_(SVM_models)_data_validation.txt
+
+val_lm_profiles <- read.table(
+  file = "GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/a_Toy_Data/1_classyfire_(SVM_models)/2_classyfire_(SVM_models)_data_validation.txt",
+  header = TRUE,
+  row.names = 1,
+  sep = "\t")
+
+# by Substrates:
+
+val_dha <- val_lm_profiles[2:25, ]
+val_n_three_DPA <- val_lm_profiles[26:35, ]
+val_epa <- val_lm_profiles[36:38, ]
+val_aa <- val_lm_profiles[39:56, ]
+
+#---> DATA PREPARATION TRAINING DATA:
 
 # Getting the explanatory (x) and response (y) variable. By explanatory, it means all the data that can explain 
 # why a patient respond or not to the treatment (the lipid meadiator profiles), and the response variable is if 
@@ -53,6 +84,7 @@ lm_profiles_transpose <- t(lm_profiles)
 # Explanatory and Response variable:
 response <- data.frame(row.names = row.names(lm_profiles_transpose), # Create the Response variable.
                        responses = lm_profiles_transpose[, 1]) 
+
 response_matrix <- as.matrix(response)
 
 explanatorys <-  lm_profiles_transpose[, -1] # Delete the first row that contains the Response variable.
@@ -66,7 +98,33 @@ colnames(explanatory) <- colnames(explanatorys)
 
 # If you are working with machine learning, the best method of scalation is standarization. 
 # Scale data prevents that the modelfrom being based on variables with high normal values.
+
 explanatory_scale <- scale(explanatory, center = FALSE, scale = TRUE)
+
+#---> DATA PREPARATION VALIDATION DATA:
+
+# Similar process to the training dataset.
+
+# Transpose columns and rows:
+val_lm_profiles_transpose <- t(val_lm_profiles)
+
+# Explanatory and Response variable:
+val_response <- data.frame(row.names = row.names(val_lm_profiles_transpose), # Create the Response variable.
+                       responses = val_lm_profiles_transpose[, 1]) 
+
+val_explanatorys <-  val_lm_profiles_transpose[, -1] # Delete the first row that contains the Response variable.
+
+# Because the response variable was in the data.frame all the elements were saved as factors, and classyfire 
+# requieres a numeric matrix. here we make it:
+
+val_explanatory <- matrix(as.numeric(unlist(val_explanatorys)),nrow=nrow(val_explanatorys))
+rownames(val_explanatory) <- rownames(val_explanatorys)
+colnames(val_explanatory) <- colnames(val_explanatorys)
+
+# Since  the model is created using scalation and transpose data, the validation datasets has to be scaled and 
+# transpose as well. 
+
+validation_scale <- scale(val_explanatory, center = FALSE, scale = TRUE) 
 
 #---> MACHINE LEARNING (Classyfire R): 
 
@@ -86,15 +144,30 @@ support_lmprofiles_scale <- cfBuild(explanatory_scale, response_matrix,
 ggClassPred(support_lmprofiles_scale, displayAll = TRUE, fillBrewer = TRUE, showText = TRUE) 
 ggEnsTrend(support_lmprofiles_scale, ylims = c(50,100))
 
-# Accuracy table: 
+# Model accuracy: 
 
 getAvgAcc(support_lmprofiles_scale)$Test # Get the %CC (Overall percentage of correctly classified test objects)
 getConfMatr(support_lmprofiles_scale) # Get a table of the consensus classification of the best model. 
 
-# Creates a table with all the models and the %CC.
+#---> MODEL VALIDATION: 
+
+# "cfPredict" takes the created models and the validation dataset to try to predict which samples belongs to the
+# responder and non-responder. It creates a data frame with the identifications and % of accuracy. 
+
+prediction_validation <- cfPredict(support_lmprofiles_scale, validation_scale)
+names(prediction_validation) <- c("prediction")
+
+# In order to further evaluate the predictivenss of this approach we next calculated  Matthews correlation 
+# coefficient (MCC), which represents the accuracy of the model at predicting outcome. Very helpful when you
+# have imbalance data. 
+
+mcc_value = mcc(preds = prediction_validation$prediction, actuals = val_response$responses) # From the mltools package.
+
+# Creates a table with all the models, the %CC and the MCC.
 
 accuracy_table <- data.frame(groups = "scalated lm profiles",
                              percentage_accuracy = getAvgAcc(support_lmprofiles_scale)$Test,
+                             MCC = mcc_value,
                              stringsAsFactors = FALSE)
 
 # Save the models as an R object:
@@ -104,7 +177,7 @@ accuracy_table <- data.frame(groups = "scalated lm profiles",
 # Make sure that the you specify the path were you want to save your model: 
 
 saveRDS(support_lmprofiles_scale, 
-        file = "GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/c_Expected_Output/1_SVM_lmprofiles_scale.R", 
+        file = "GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/c_Expected_Output/1_classyfire_(SVM_models)/1_SVM_lmprofiles_scale.R", 
         ascii = FALSE, version = NULL, compress = TRUE, refhook = NULL)
 
 #---> SVM PER GROUP: 
@@ -118,6 +191,7 @@ saveRDS(support_lmprofiles_scale,
 # that the "groups" list and the names of the "groups" list is updated. 
 
 groups <- list(dha, n_three_DPA, epa, aa) # Update in case you want to create other models. 
+val_groups <- list(val_dha, val_n_three_DPA, val_epa, val_aa) # Update in case you want to create other models.
 
 # Create a vector with the names associated to all the elements in the list: 
 
@@ -129,25 +203,44 @@ names(groups) <- c("DHA", "n-3 DPA", "EPA", "AA") # Update in case you want to c
 for (lm in 1:length(groups)) {
   
   if (nrow(groups[[lm]]) > 1) {
+    
+  # Training data set:
   
   transpose <- matrix(as.numeric(t(groups[[lm]])),nrow=nrow(t(groups[[lm]]))) # Transpose and create matrix.
   rownames(transpose) <- rownames(t(groups[[lm]]))
   colnames(transpose) <- colnames(t(groups[[lm]]))
   
-  
   scale <- scale(transpose, center = FALSE, scale = TRUE) # All the model will use scale data
+  
+  # Validation data set: 
+  
+  val_transpose <- matrix(as.numeric(t(val_groups[[lm]])),nrow=nrow(t(val_groups[[lm]]))) # Transpose and create matrix.
+  rownames(val_transpose) <- rownames(t(val_groups[[lm]]))
+  colnames(val_transpose) <- colnames(t(val_groups[[lm]]))
+  
+  val_scale <- scale(val_transpose, center = FALSE, scale = TRUE) # All the model will use scale data
+  
+  # Support Vector Machine Model:
   
   support_vm <- cfBuild(scale, response_matrix, bootNum = 65, ensNum = 65, cpus = 4) # Creates model
   
-  average_right <- data.frame(groups = names(groups)[[lm]], 
-                              percentage_accuracy = getAvgAcc(support_vm)$Test) # Save %CC value.
+  # Validation of the models:
   
-  accuracy_table <- rbind(accuracy_table, average_right) # Append %CC to the accuracy table. 
+  pred_val <- cfPredict(support_vm, val_scale)
+  names(pred_val) <- c("prediction")
+  
+  mcc_val = mcc(preds = pred_val$prediction, actuals = val_response$responses)
+  
+  average_right <- data.frame(groups = names(groups)[[lm]], 
+                              percentage_accuracy = getAvgAcc(support_vm)$Test, 
+                              MCC= mcc_val) # Save %CC value.
+  
+  accuracy_table <- rbind(accuracy_table, average_right) # Append %CC and MCC to the accuracy table. 
   
   # Save model as a R object. 
   
   saveRDS(support_vm, 
-          file = paste("GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/c_Expected_Output/1_SVM_",
+          file = paste("GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/c_Expected_Output/1_classyfire_(SVM_models)/1_SVM_",
                        names(groups)[[lm]], ".R", sep = ""),
           ascii = FALSE, version = NULL, compress = TRUE, refhook = NULL)
   
@@ -160,7 +253,7 @@ for (lm in 1:length(groups)) {
 # Write table with accuracy values: 
 
 write.table(accuracy_table, 
-            file = "GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/c_Expected_Output/1_accuracy_table.txt",
+            file = "GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/c_Expected_Output/1_classyfire_(SVM_models)/1_accuracy_table.txt",
             sep = "\t",
             quote = FALSE,
             row.names = FALSE) 
