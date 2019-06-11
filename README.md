@@ -25,9 +25,9 @@ All the R scripts were created and used on **Windows 10**:
 **R version**: 3.5.1 
 **R Studio version**: 1.1.456
 
-The script should be compatible with Mac and Linux operating systems. 
+The scripts should be compatible with Mac and Linux operating systems. 
 
-For installing R and R Studio, follows the installation instructions [here](https://www.stats.bris.ac.uk/R/) and [here](https://www.rstudio.com/products/rstudio/download/). 
+For installing R and R Studio, follows the installation instructions [here](https://www.stats.bris.ac.uk/R/) and [here](https://www.rstudio.com/products/rstudio/download/). The installation time for this sofware should not exceed more than 5 minutes.
 
 ## Requiered R packages (libraries): 
 
