@@ -14,7 +14,7 @@ Finally, it also contains a small script that was used to do the **differential 
 
 ## Hardware requierements: 
 
-All the scripts and software used in the paper *Blood pro-resolving mediator profiles are linked with synovial pathology and predict DMARD responsiveness in rheumatoid arthritis* were run in a standar computer (RAM: 8GB, CP$: 4 cores, 3.60 GHZ/core) with a maximum runtime of aprox. 10 minutes for the more demanding script (add info here). 
+All the scripts and software used in the paper *Blood pro-resolving mediator profiles are linked with synovial pathology and predict DMARD responsiveness in rheumatoid arthritis* were run in a standar computer (RAM: 8GB, CP$: 4 cores, 3.60 GHZ/core) with a maximum runtime of aprox. 10 minutes for the more demanding script ([**1_classyfire_(SVM_models).R**](https://github.com/eagomezc/2019_Machine_Learning_DMARD_in_RA_patients/blob/master/b_R_Scripts/1_classyfire_(SVM_models).R)). 
 
 A computer with lower specs (e.g. 2GB of RAM) will work but some scripts will take longer to run. 
 
