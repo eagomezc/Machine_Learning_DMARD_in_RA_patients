@@ -250,7 +250,10 @@ for (lm in 1:length(groups)) {
   
 }
 
-# Write table with accuracy values: 
+# OUTPUT: 
+
+# Besides the functional models, the OUTPUT of this script is a table with Accuracy score of the model and the
+# validation of the model based on the MCC value. 
 
 write.table(accuracy_table, 
             file = "GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/c_Expected_Output/1_classyfire_(SVM_models)/1_accuracy_table.txt",

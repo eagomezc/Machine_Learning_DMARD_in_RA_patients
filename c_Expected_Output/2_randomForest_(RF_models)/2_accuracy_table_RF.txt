@@ -1,0 +1,6 @@
+groups	percentage_accuracy	MCC
+scalated lm profiles	100	1
+DHA	100	1
+n-3 DPA	100	1
+EPA	95	1
+AA	100	1

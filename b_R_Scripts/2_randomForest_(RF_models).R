@@ -37,20 +37,6 @@ lm_profiles <- read.table(
 
 lm_profiles_scale <- as.data.frame(scale(lm_profiles[, -1], center = FALSE, scale = TRUE))
 
-# VALIDATION SET:
-
-# Data use to test the model (independent cohort)!
-
-# The dataset consist in a tab-delimited file in .txt format with the follow specifications: 
-# Columns: The different lipid mediators plus a column called "responses" that contains information about the 
-# "Responder" and "Non_Responder". 
-# Rows: The different samples (each patient data).
-
-
-
-
-#---> DATA PREPARATION TRAINING DATA: 
-
 # Add the classification variable to the data frame (Responder and non responder):
 
 # Getting the explanatory (x) and response (y) variable. By explanatory, it means all the data that can explain why a
@@ -72,6 +58,31 @@ dha <- lm_profiles_scale[ ,c(1:24, 56)]
 n_three_DPA <- lm_profiles_scale[ , c(25:34, 56)]
 epa <- lm_profiles_scale[ , c(35:37, 56)]
 aa <- lm_profiles_scale[ , c(38:55, 56)]
+
+# VALIDATION SET:
+
+# Data use to test the model (independent cohort)!
+
+# The dataset consist in a tab-delimited file in .txt format with the follow specifications: 
+# Columns: The different lipid mediators plus a column called "responses" that contains information about the 
+# "Responder" and "Non_Responder". 
+# Rows: The different samples (each patient data).
+
+val_lm_profiles <- read.table(
+  file = "GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/a_Toy_Data/2_randomForest_(RF_models)/2_randomForest_(RF_models)_data_validation.txt",
+  header = TRUE,
+  row.names = 1, # Specify that the first column is row names. 
+  sep = "\t")
+
+val_lm_profiles_scale <- as.data.frame(scale(val_lm_profiles[, -1], center = FALSE, scale = TRUE))
+names(val_lm_profiles_scale) <- make.names(names(val_lm_profiles_scale))
+
+# By Substrates:
+
+val_dha <- val_lm_profiles_scale[ ,c(1:24)]
+val_n_three_DPA <- val_lm_profiles_scale[ , c(25:34)]
+val_epa <- val_lm_profiles_scale[ , c(35:37)]
+val_aa <- val_lm_profiles_scale[ , c(38:55)]
 
 #---> MACHINE LEARNING (randomForest R):
 
@@ -96,7 +107,10 @@ oob_error <- double(ncol(lm_profiles_scale) - 1) #Define number of variable. -1 
 
 for (mtry in 1:(ncol(lm_profiles_scale) - 1)) {
   
-  #importance = TRUE creates the graph of the important variables. 
+  # NOTE: 
+  # importance = TRUE creates the plot of the important variables, that can gave us an idea, based on the
+  # decrease of the accuracy of the models, what lipid mediators are contributing to make a better model. 
+  
   rf_lm_profiles_scales <- randomForest(responses ~ ., data = lm_profiles_scale, mtry = mtry, 
                                         importance = TRUE, ntree = 10000)
   
@@ -129,9 +143,16 @@ dev.off()
 # "prediction" takes the created models and the validation dataset to try to predict which samples belongs to the
 # responder and non-responder. 
 
+pred_rf_lm_profiles <- as.data.frame(predict(rf_lm_profiles_final, val_lm_profiles_scale))
+names(pred_rf_lm_profiles) <- c("prediction")
 
+# In order to further evaluate the predictivenss of this approach we next calculated  Matthews correlation 
+# coefficient (MCC), which represents the accuracy of the model at predicting outcome. Very helpful when you
+# have imbalance data. 
 
-# % OF ACCURACY:
+mcc_value = mcc(preds = pred_rf_lm_profiles$prediction, actuals = val_lm_profiles$responses) # From the mltools package.
+
+# Creates a table with all the models, the %CC and the MCC.
 
 # An error estimate is made for the cases which were not used while building the tree. That is called an 
 # OOB (Out-of-bag) error estimate which is mentioned as a percentage.
@@ -140,6 +161,7 @@ dev.off()
 
 no_oob_error_table <- data.frame(groups = "scalated lm profiles",
                                  percentage_accuracy = 100 - ((rf_lm_profiles_final$err.rate[10000])*100),
+                                 MCC = mcc_value,
                                  stringsAsFactors = FALSE)
 
 # Save the models as an R object:
@@ -147,21 +169,23 @@ no_oob_error_table <- data.frame(groups = "scalated lm profiles",
 # you can call it using "readRDS". 
 
 saveRDS(rf_lm_profiles_final, 
-        file = "C:/Users/hhy270/Dropbox/Rheumatoid arthritis/output/4_random_forest/models_RF/RF_lmprofiles_scale.R", 
+        file = "GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/c_Expected_Output/2_randomForest_(RF_models)/2_RF_lmprofiles_scale.R", 
         ascii = FALSE, version = NULL, compress = TRUE, refhook = NULL)
 
 #---> RF PER GROUP: 
 
-# Run the same analysis but automatically for the rest of the subgroups. 
-
 # Create a list with the names of all the subgroups:
-groups <- list(dha, n_three_DPA, aa, resolvins_d, epa, protectins, pctr, maresins, mctr, rvt, 
-               rvd, pd, mar, lx, ltb, lt, pg, tx, dha_n_dpa_epa)
+
+# Modifying the original lipid mediator file, including other data (such as clinical scores) and dividing the table
+# in different sections is possible to create automatically all the models you want. YOU NEED TO MAKE SURE WHATSOEVER
+# that the "groups" list and the names of the "groups" list is updated. 
+
+groups <- list(dha, n_three_DPA, epa, aa) # Update in case you want to create other models. 
+val_groups <- list(val_dha, val_n_three_DPA, val_epa, val_aa) # Update in case you want to create other models.
 
 # Create a vector with the names associated to all the elements in the list: 
-names(groups) <- c("DHA", "n-3 DPA", "AA", "Resolvins_d", "EPA", "Protectins", 
-                   "PCTRS", "Maresins", "MCTR", "RVT", "D-Series Resolvins", "PD", "Mar", "LX", 
-                   "LTB", "Leukotrienes", "Prostaglandins", "TX", "DHA_N-3DPA_EPA")
+
+names(groups) <- c("DHA", "n-3 DPA", "EPA", "AA") # Update in case you want to create other models. 
 
 # The loop goes through all the elements in gropus and creates a model for each of them. The model can not work with
 # only one row, so the "if" makes sure that only the subgroups with more than one row are analyzed. 
@@ -190,7 +214,7 @@ for (lm in 1:length(groups)) {
     
     # Model Graphs:
     
-    pdf(file = paste("C:/Users/hhy270/Dropbox/Rheumatoid arthritis/output/4_random_forest/graphs_RF/RF_",
+    pdf(file = paste("GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/c_Expected_Output/2_randomForest_(RF_models)/2_RF_",
                      names(groups)[[lm]], ".pdf", sep = ""), 
         width = 14, height = 10, onefile = TRUE)
     varImpPlot(random_forest_final, sort = TRUE, main = names(groups)[[lm]]) # Importance of the variable for the model. 
@@ -200,10 +224,18 @@ for (lm in 1:length(groups)) {
            text.font = 3, cex = 1)
     dev.off()
     
+    # Validation: 
+    
+    pred_val <- as.data.frame(predict(random_forest_final, val_groups[[lm]]))
+    names(pred_val) <- c("prediction")
+    
+    mcc_val = mcc(preds = pred_val$prediction, actuals = val_lm_profiles$responses)
+    
     # Accuracy table: 
     
     accuracy_table <- data.frame(groups = names(groups)[[lm]],
                                  percentage_accuracy = 100 - ((random_forest_final$err.rate[10000])*100),
+                                 MCC = mcc_val,
                                  stringsAsFactors = FALSE)
     
     no_oob_error_table <- rbind(no_oob_error_table, accuracy_table)
@@ -211,7 +243,7 @@ for (lm in 1:length(groups)) {
     # Save final model:
     
     saveRDS(random_forest_final, 
-            file = paste("C:/Users/hhy270/Dropbox/Rheumatoid arthritis/output/4_random_forest/models_RF/RF_",
+            file = paste("GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/c_Expected_Output/2_randomForest_(RF_models)/2_RF_",
                          names(groups)[[lm]], ".R", sep = ""),
             ascii = FALSE, version = NULL, compress = TRUE, refhook = NULL)
   
@@ -221,10 +253,16 @@ for (lm in 1:length(groups)) {
   
 }
     
-# Write table with accuracy values: 
+# OUTPUT: 
+
+# Besides the functional models, the OUTPUT of this script is a table with Accuracy score of the model and the
+# validation of the model based on the MCC value. 
+
+# The resulting plots also gave us an idea of the performance of the models, that includes the "importance" analysis,
+# and the improvement of the model based on the number of tress used to create it. 
 
 write.table(no_oob_error_table, 
-            file = "C:/Users/hhy270/Dropbox/Rheumatoid arthritis/output/4_random_forest/no_oob_error_table.txt",
+            file = "GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/c_Expected_Output/2_randomForest_(RF_models)/2_accuracy_table_RF.txt",
             sep = "\t",
             quote = FALSE,
             row.names = FALSE)  
