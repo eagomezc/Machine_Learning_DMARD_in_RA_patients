@@ -14,6 +14,17 @@ library(randomForest)
 library("mltools")
 set.seed(415) # To get same results even with the random part.
 
+#---> INPUT AND OUTPUT:
+
+# In this section please specify where are the input files and where you want to save the output files.
+# In the input and output variable you can see what is the path expected from the user to write.
+
+input <- "C:/Users/hhy270/Documents/GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/a_Toy_Data/2_randomForest_(RF_models)/"
+output <- "C:/Users/hhy270/Documents/GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/c_Expected_Output/2_randomForest_(RF_models)/"
+
+# !!!! IMPORTANT: For this script to work the training dataset has to be called: 2_randomForest_(RF_models)_toy_data.txt
+# !!!! IMPORTANT: For this script to work the validation dataset has to be called: 2_randomForest_(RF_models)_data_validation.txt
+
 #---> DATA MANIPULATION: 
 
 # TRAINING SET:
@@ -30,7 +41,7 @@ set.seed(415) # To get same results even with the random part.
 # See a_Toy_Data/2_randomForest_(RF_models)/2_randomForest_(RF_models)_toy_data.txt
 
 lm_profiles <- read.table(
-  file = "GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/a_Toy_Data/2_randomForest_(RF_models)/2_randomForest_(RF_models)_toy_data.txt",
+  file = paste(input, "2_randomForest_(RF_models)_toy_data.txt", sep = ""),
   header = TRUE,
   row.names = 1, # Specify that the first column is row names. 
   sep = "\t")
@@ -69,7 +80,7 @@ aa <- lm_profiles_scale[ , c(38:55, 56)]
 # Rows: The different samples (each patient data).
 
 val_lm_profiles <- read.table(
-  file = "GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/a_Toy_Data/2_randomForest_(RF_models)/2_randomForest_(RF_models)_data_validation.txt",
+  file = paste(input, "2_randomForest_(RF_models)_data_validation.txt", sep = ""), 
   header = TRUE,
   row.names = 1, # Specify that the first column is row names. 
   sep = "\t")
@@ -127,9 +138,9 @@ final_mtry <- which.max(oob_error)
 rf_lm_profiles_final <- randomForest(responses ~ ., data = lm_profiles_scale, mtry = final_mtry, 
                                      importance = TRUE, ntree = 10000)
 
-# Save relevan Plots:
+# Save relevant Plots:
 
-pdf(file = "GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/c_Expected_Output/2_randomForest_(RF_models)/2_RF_lmprofiles_scale.pdf",
+pdf(file = paste(output, "2_RF_lmprofiles_scale.pdf", sep = ""), 
     width = 14, height = 10, onefile = TRUE)
 varImpPlot(rf_lm_profiles_final, sort = TRUE, main = "lm_profiles") # Importance of the variable for the model. 
 plot(rf_lm_profiles_final, main = "lm_profiles") # Decreasing of the error base on the number of tres. 
@@ -169,7 +180,7 @@ no_oob_error_table <- data.frame(groups = "scalated lm profiles",
 # you can call it using "readRDS". 
 
 saveRDS(rf_lm_profiles_final, 
-        file = "GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/c_Expected_Output/2_randomForest_(RF_models)/2_RF_lmprofiles_scale.R", 
+        file = paste(output, "2_RF_lmprofiles_scale.R", sep = ""),  
         ascii = FALSE, version = NULL, compress = TRUE, refhook = NULL)
 
 #---> RF PER GROUP: 
@@ -214,7 +225,7 @@ for (lm in 1:length(groups)) {
     
     # Model Graphs:
     
-    pdf(file = paste("GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/c_Expected_Output/2_randomForest_(RF_models)/2_RF_",
+    pdf(file = paste(output, "2_RF_",
                      names(groups)[[lm]], ".pdf", sep = ""), 
         width = 14, height = 10, onefile = TRUE)
     varImpPlot(random_forest_final, sort = TRUE, main = names(groups)[[lm]]) # Importance of the variable for the model. 
@@ -243,7 +254,7 @@ for (lm in 1:length(groups)) {
     # Save final model:
     
     saveRDS(random_forest_final, 
-            file = paste("GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/c_Expected_Output/2_randomForest_(RF_models)/2_RF_",
+            file = paste(output, "2_RF_",
                          names(groups)[[lm]], ".R", sep = ""),
             ascii = FALSE, version = NULL, compress = TRUE, refhook = NULL)
   
@@ -262,7 +273,7 @@ for (lm in 1:length(groups)) {
 # and the improvement of the model based on the number of tress used to create it. 
 
 write.table(no_oob_error_table, 
-            file = "GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/c_Expected_Output/2_randomForest_(RF_models)/2_accuracy_table_RF.txt",
+            file = paste(output, "2_accuracy_table_RF.txt", sep = ""),
             sep = "\t",
             quote = FALSE,
             row.names = FALSE)  

@@ -14,6 +14,17 @@
 library(edgeR)
 library(ggplot2)
 
+#---> INPUT AND OUTPUT:
+
+# In this section please specify where are the input files and where you want to save the output files.
+# In the input and output variable you can see what is the path expected from the user to write.
+
+input <- "C:/Users/hhy270/Documents/GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/a_Toy_Data/3_DGE_analysis_(Edge_R)/"
+output <- "C:/Users/hhy270/Documents/GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/c_Expected_Output/3_DGE_analysis_(Edge_R)/"
+
+# !!!! IMPORTANT: For this script to work the training dataset has to be called: 3_DGE_analysis_(Edge_R)_read_counts.txt
+# !!!! IMPORTANT: For this script to work the validation dataset has to be called: 3_DGE_analysis_(Edge_R)_class_reads.txt
+
 #---> DATA LOAD: 
 
 # Open the txt file with the gene expression information (read counts). 
@@ -25,7 +36,7 @@ library(ggplot2)
 # See a_Toy_Data/3_DGE_analysis_(Edge_R)/3_DGE_analysis_(Edge_R)_read_counts.txt
 
 counts_blood <- read.table(
-  file = "GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/a_Toy_Data/3_DGE_analysis_(Edge_R)/3_DGE_analysis_(Edge_R)_read_counts.txt",
+  file = paste(input, "3_DGE_analysis_(Edge_R)_read_counts.txt", sep = ""),
   header = TRUE,
   row.names = 1, # Specify that the first column is row names. 
   sep = "\t")
@@ -38,7 +49,7 @@ counts_blood <- read.table(
 # See a_Toy_Data/3_DGE_analysis_(Edge_R)/3_DGE_analysis_(Edge_R)_class_reads.txt
 
 classification_blood <- read.table(
-  file = "GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/a_Toy_Data/3_DGE_analysis_(Edge_R)/3_DGE_analysis_(Edge_R)_class_reads.txt",
+  file = paste(input, "3_DGE_analysis_(Edge_R)_class_reads.txt", sep = ""), 
   header = TRUE,
   sep = "\t")
 
@@ -94,7 +105,7 @@ edge_fc_table_blood <- as.data.frame(topTags(lrt_blood, n = Inf, adjust.method =
 # The Output of this section is a tab-delimited table with the information of DGE results: 
 
 write.table(edge_fc_table_blood, 
-            file = "GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/c_Expected_Output/3_DGE_analysis_(Edge_R)/3_DGE_results.txt",
+            file = paste(output, "3_DGE_results.txt", sep = ""),
             sep = "\t",
             quote = FALSE,
             row.names = TRUE)
@@ -141,7 +152,7 @@ violin_table$groups <- factor(violin_table$groups, levels = c("responder", "non_
 # VIOLIN PLOTS:
 # Creates and saves as a pdf the violin plots:
 
-pdf(file = "GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/c_Expected_Output/3_DGE_analysis_(Edge_R)/3_Violin_plot_ALOX.pdf",
+pdf(file = paste(output, "3_Violin_plot_ALOX.pdf", sep = ""), 
     width = 25, height = 12, onefile = TRUE)
 ggplot(violin_table, aes(y = counts, x = groups)) +
   geom_violin(aes(fill = groups), trim = FALSE) +

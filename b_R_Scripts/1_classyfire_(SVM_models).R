@@ -13,6 +13,17 @@
 library(classyfire)
 library("mltools")
 
+#---> INPUT AND OUTPUT:
+
+# In this section please specify where are the input files and where you want to save the output files.
+# In the input and output variable you can see what is the path expected from the user to write.
+
+input <- "C:/Users/hhy270/Documents/GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/a_Toy_Data/1_classyfire_(SVM_models)/"
+output <- "C:/Users/hhy270/Documents/GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/c_Expected_Output/1_classyfire_(SVM_models)/"
+
+# !!!! IMPORTANT: For this script to work the training dataset has to be called: 1_classyfire_(SVM_models)_toy_data.txt
+# !!!! IMPORTANT: For this script to work the validation dataset has to be called: 2_classyfire_(SVM_models)_data_validation.txt
+
 #---> DATA MANIPULATION: 
 
 # TRAINING SET:
@@ -30,7 +41,7 @@ library("mltools")
 # See a_Toy_Data/1_classyfire_(SVM_models)/1_classyfire_(SVM_models)_toy_data.txt
 
 lm_profiles <- read.table(
- file = "GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/a_Toy_Data/1_classyfire_(SVM_models)/1_classyfire_(SVM_models)_toy_data.txt",
+ file = paste(input, "1_classyfire_(SVM_models)_toy_data.txt", sep = ""), 
  header = TRUE,
  row.names = 1,
  sep = "\t")
@@ -60,7 +71,7 @@ aa <- lm_profiles[39:56, ]
 # See a_Toy_Data/1_classyfire_(SVM_models)/2_classyfire_(SVM_models)_data_validation.txt
 
 val_lm_profiles <- read.table(
-  file = "GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/a_Toy_Data/1_classyfire_(SVM_models)/2_classyfire_(SVM_models)_data_validation.txt",
+  file = paste(input, "2_classyfire_(SVM_models)_data_validation.txt", sep = ""), 
   header = TRUE,
   row.names = 1,
   sep = "\t")
@@ -177,7 +188,7 @@ accuracy_table <- data.frame(groups = "scalated lm profiles",
 # Make sure that the you specify the path were you want to save your model: 
 
 saveRDS(support_lmprofiles_scale, 
-        file = "GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/c_Expected_Output/1_classyfire_(SVM_models)/1_SVM_lmprofiles_scale.R", 
+        file = paste(output, "1_SVM_lmprofiles_scale.R",sep = ""),
         ascii = FALSE, version = NULL, compress = TRUE, refhook = NULL)
 
 #---> SVM PER GROUP: 
@@ -240,7 +251,7 @@ for (lm in 1:length(groups)) {
   # Save model as a R object. 
   
   saveRDS(support_vm, 
-          file = paste("GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/c_Expected_Output/1_classyfire_(SVM_models)/1_SVM_",
+          file = paste(output, "1_SVM_",
                        names(groups)[[lm]], ".R", sep = ""),
           ascii = FALSE, version = NULL, compress = TRUE, refhook = NULL)
   
@@ -256,7 +267,7 @@ for (lm in 1:length(groups)) {
 # validation of the model based on the MCC value. 
 
 write.table(accuracy_table, 
-            file = "GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/c_Expected_Output/1_classyfire_(SVM_models)/1_accuracy_table.txt",
+            file = paste(output, "1_accuracy_table.txt", sep = ""),
             sep = "\t",
             quote = FALSE,
             row.names = FALSE) 
