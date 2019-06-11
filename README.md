@@ -54,4 +54,12 @@ BiocManager::install("edgeR")
 
 The repository contains three folders: 
 
+## [a_Toy_Data](https://github.com/eagomezc/2019_Machine_Learning_DMARD_in_RA_patients/tree/master/a_Toy_Data)
+
+This repository contains, separated by subfolders, the different file formats (as toy data) that has to be used to run the different R scripts. Each subfolder has the name of the specific script where they can be used, in addition to the number of script, to make more clear what file is used in what folder. At the moment to download this repository in a local computer, it's important to remember that all the **pathways in the scripts has to be changed**.
+
+
+
+
+
 
