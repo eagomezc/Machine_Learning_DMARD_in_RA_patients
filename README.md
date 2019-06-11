@@ -42,8 +42,8 @@ install.packages("C:pathToDirectory/classyfire_0.1-2.tar.gz",
                   repos = NULL, 
                   type = "source")
                   
-# Packages randomForest and mltools:
-install.packages(c('classyfire', 'randomForest', 'mltools'))
+# Packages ggplot2, randomForest and mltools:
+install.packages(c('ggplot2', 'randomForest', 'mltools'))
 
 # Package edgeR from Bioconductor:
 if (!requireNamespace("BiocManager", quietly = TRUE))
