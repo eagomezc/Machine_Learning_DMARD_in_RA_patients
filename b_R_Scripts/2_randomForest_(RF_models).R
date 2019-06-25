@@ -48,6 +48,11 @@ lm_profiles <- read.table(
 
 lm_profiles_scale <- as.data.frame(scale(lm_profiles[, -1], center = FALSE, scale = TRUE))
 
+# If all the values from one column are the same, the scalation will give you NA. For those cases, to avoid errors,
+# replace the NA for zeros. 
+
+lm_profiles_scale[is.na(lm_profiles_scale)] <- 0
+
 # Add the classification variable to the data frame (Responder and non responder):
 
 # Getting the explanatory (x) and response (y) variable. By explanatory, it means all the data that can explain why a
@@ -86,6 +91,7 @@ val_lm_profiles <- read.table(
   sep = "\t")
 
 val_lm_profiles_scale <- as.data.frame(scale(val_lm_profiles[, -1], center = FALSE, scale = TRUE))
+val_lm_profiles_scale[is.na(val_lm_profiles_scale)] <- 0
 names(val_lm_profiles_scale) <- make.names(names(val_lm_profiles_scale))
 
 # By Substrates:

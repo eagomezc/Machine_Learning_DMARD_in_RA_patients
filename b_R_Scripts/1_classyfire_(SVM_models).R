@@ -98,7 +98,7 @@ response <- data.frame(row.names = row.names(lm_profiles_transpose), # Create th
 
 response_matrix <- as.matrix(response)
 
-explanatorys <-  lm_profiles_transpose[, -1] # Delete the first row that contains the Response variable.
+explanatorys <-  lm_profiles_transpose[, -1] # Delete the first column that contains the Response variable.
 
 # Because the response variable was in the data.frame all the elements were saved as factors, and classyfire 
 # requieres a numeric matrix. here we make it:
