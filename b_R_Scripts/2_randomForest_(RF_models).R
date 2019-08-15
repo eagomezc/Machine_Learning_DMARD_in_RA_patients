@@ -71,10 +71,10 @@ names(lm_profiles_scale) <- make.names(names(lm_profiles_scale))
 
 # By Substrates:
 
-dha <- lm_profiles_scale[ ,c(1:24, 56)]
-n_three_DPA <- lm_profiles_scale[ , c(25:34, 56)]
-epa <- lm_profiles_scale[ , c(35:37, 56)]
-aa <- lm_profiles_scale[ , c(38:55, 56)]
+dha <- lm_profiles_scale[ ,c(1:23, 55)]
+n_three_DPA <- lm_profiles_scale[ , c(24:33, 55)]
+epa <- lm_profiles_scale[ , c(34:36, 55)]
+aa <- lm_profiles_scale[ , c(37:54, 55)]
 
 # TEST SET:
 
@@ -97,10 +97,10 @@ names(val_lm_profiles_scale) <- make.names(names(val_lm_profiles_scale))
 
 # By Substrates:
 
-val_dha <- val_lm_profiles_scale[ ,c(1:24)]
-val_n_three_DPA <- val_lm_profiles_scale[ , c(25:34)]
-val_epa <- val_lm_profiles_scale[ , c(35:37)]
-val_aa <- val_lm_profiles_scale[ , c(38:55)]
+val_dha <- val_lm_profiles_scale[ ,c(1:23)]
+val_n_three_DPA <- val_lm_profiles_scale[ , c(24:33)]
+val_epa <- val_lm_profiles_scale[ , c(34:36)]
+val_aa <- val_lm_profiles_scale[ , c(37:54)]
 
 #---> MACHINE LEARNING (randomForest R):
 
@@ -170,7 +170,14 @@ names(pred_rf_lm_profiles) <- c("prediction")
 
 mcc_value = mcc(preds = pred_rf_lm_profiles$prediction, actuals = val_lm_profiles$responses) # From the mltools package.
 
-# Creates a table with all the models, the %CC and the MCC.
+# "prediction" it also allows to calculate the probability of a sample to be belong to one group or another. 
+# This values can be then used to make a ROC curve. 
+
+pred_rf_lm_profiles_p <- as.data.frame(predict(rf_lm_profiles_final, val_lm_profiles_scale, type = "prob"))
+
+roc_value = roc(val_lm_profiles$responses, pred_rf_lm_profiles_p$`Non_Responder`) # ROC curve calculation. 
+
+# Creates a table with all the models, the %CC, AUC and the MCC.
 
 # An error estimate is made for the cases which were not used while building the tree. That is called an 
 # OOB (Out-of-bag) error estimate which is mentioned as a percentage.
@@ -180,6 +187,7 @@ mcc_value = mcc(preds = pred_rf_lm_profiles$prediction, actuals = val_lm_profile
 no_oob_error_table <- data.frame(groups = "scalated lm profiles",
                                  percentage_accuracy = 100 - ((rf_lm_profiles_final$err.rate[10000])*100),
                                  MCC = mcc_value,
+                                 AUC = roc_value$auc,
                                  stringsAsFactors = FALSE)
 
 # Save the models as an R object:
@@ -249,11 +257,18 @@ for (lm in 1:length(groups)) {
     
     mcc_val = mcc(preds = pred_val$prediction, actuals = val_lm_profiles$responses)
     
+    # ROC curves:
+    
+    pred_val_p <- as.data.frame(predict(random_forest_final, val_groups[[lm]], type = "prob"))
+    
+    roc_val = roc(val_lm_profiles$responses, pred_val_p$`Non_Responder`) # ROC curve calculation. 
+    
     # Accuracy table: 
     
     accuracy_table <- data.frame(groups = names(groups)[[lm]],
                                  percentage_accuracy = 100 - ((random_forest_final$err.rate[10000])*100),
                                  MCC = mcc_val,
+                                 AUC = roc_val$auc,
                                  stringsAsFactors = FALSE)
     
     no_oob_error_table <- rbind(no_oob_error_table, accuracy_table)
@@ -278,6 +293,9 @@ for (lm in 1:length(groups)) {
 
 # The resulting plots also gave us an idea of the performance of the models, that includes the "importance" analysis,
 # and the improvement of the model based on the number of tress used to create it. 
+
+no_oob_error_table[, c(2)] <- round(no_oob_error_table[, c(2)], digits = 0) 
+no_oob_error_table[, c(3, 4)] <- round(no_oob_error_table[, c(3, 4)], digits = 2) 
 
 write.table(no_oob_error_table, 
             file = paste(output, "2_accuracy_table_RF.txt", sep = ""),

@@ -11,7 +11,8 @@
 #---> LIBRARY LOAD:
 
 library(classyfire)
-library("mltools")
+library(mltools)
+library(pROC)
 
 #---> INPUT AND OUTPUT:
 
