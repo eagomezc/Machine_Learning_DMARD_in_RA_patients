@@ -21,8 +21,8 @@ library("mltools")
 input <- "C:/Users/hhy270/Documents/GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/a_Data/1_classyfire_(SVM_models)/"
 output <- "C:/Users/hhy270/Documents/GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/c_Expected_Output/1_classyfire_(SVM_models)/"
 
-# !!!! IMPORTANT: For this script to work the training dataset has to be called: 1_classyfire_(SVM_models)_toy_data.txt
-# !!!! IMPORTANT: For this script to work the validation dataset has to be called: 2_classyfire_(SVM_models)_data_validation.txt
+# !!!! IMPORTANT: For this script to work the training dataset has to be called: 1_classyfire_(SVM_models)_data.txt
+# !!!! IMPORTANT: For this script to work the test dataset has to be called: 2_classyfire_(SVM_models)_data_validation.txt
 
 #---> DATA MANIPULATION: 
 
@@ -38,10 +38,10 @@ output <- "C:/Users/hhy270/Documents/GitHub/2018_Machine_Learning_MTX_treatment_
 # otherwhise.
 # Following rows: All the lipid mediators used to create the model.
 
-# See a_Toy_Data/1_classyfire_(SVM_models)/1_classyfire_(SVM_models)_toy_data.txt
+# See a_Data/1_classyfire_(SVM_models)/1_classyfire_(SVM_models)_data.txt
 
 lm_profiles <- read.table(
- file = paste(input, "1_classyfire_(SVM_models)_toy_data.txt", sep = ""), 
+ file = paste(input, "1_classyfire_(SVM_models)_data.txt", sep = ""), 
  header = TRUE,
  row.names = 1,
  sep = "\t")
@@ -68,7 +68,7 @@ aa <- lm_profiles[39:56, ]
 # Following rows: All the lipid mediators used to create the model (NOTE: They have to be in the same order as
 # the training dataset).
 
-# See a_Toy_Data/1_classyfire_(SVM_models)/2_classyfire_(SVM_models)_data_validation.txt
+# See a_Data/1_classyfire_(SVM_models)/2_classyfire_(SVM_models)_data_validation.txt
 
 val_lm_profiles <- read.table(
   file = paste(input, "2_classyfire_(SVM_models)_data_validation.txt", sep = ""), 
@@ -112,7 +112,7 @@ colnames(explanatory) <- colnames(explanatorys)
 
 explanatory_scale <- scale(explanatory, center = FALSE, scale = TRUE)
 
-#---> DATA PREPARATION VALIDATION DATA:
+#---> DATA PREPARATION TEST DATA:
 
 # Similar process to the training dataset.
 
@@ -132,7 +132,7 @@ val_explanatory <- matrix(as.numeric(unlist(val_explanatorys)),nrow=nrow(val_exp
 rownames(val_explanatory) <- rownames(val_explanatorys)
 colnames(val_explanatory) <- colnames(val_explanatorys)
 
-# Since  the model is created using scalation and transpose data, the validation datasets has to be scaled and 
+# Since  the model is created using scalation and transpose data, the test datasets has to be scaled and 
 # transpose as well. 
 
 validation_scale <- scale(val_explanatory, center = FALSE, scale = TRUE) 
@@ -162,7 +162,7 @@ getConfMatr(support_lmprofiles_scale) # Get a table of the consensus classificat
 
 #---> MODEL VALIDATION: 
 
-# "cfPredict" takes the created models and the validation dataset to try to predict which samples belongs to the
+# "cfPredict" takes the created models and the test dataset to try to predict which samples belongs to the
 # responder and non-responder. It creates a data frame with the identifications and % of accuracy. 
 
 prediction_validation <- cfPredict(support_lmprofiles_scale, validation_scale)
@@ -223,7 +223,7 @@ for (lm in 1:length(groups)) {
   
   scale <- scale(transpose, center = FALSE, scale = TRUE) # All the model will use scale data
   
-  # Validation data set: 
+  # test dataset: 
   
   val_transpose <- matrix(as.numeric(t(val_groups[[lm]])),nrow=nrow(t(val_groups[[lm]]))) # Transpose and create matrix.
   rownames(val_transpose) <- rownames(t(val_groups[[lm]]))

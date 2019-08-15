@@ -23,8 +23,8 @@ set.seed(415) # To get same results even with the random part.
 input <- "C:/Users/hhy270/Documents/GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/a_Data/2_randomForest_(RF_models)/"
 output <- "C:/Users/hhy270/Documents/GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/c_Expected_Output/2_randomForest_(RF_models)/"
 
-# !!!! IMPORTANT: For this script to work the training dataset has to be called: 2_randomForest_(RF_models)_toy_data.txt
-# !!!! IMPORTANT: For this script to work the validation dataset has to be called: 2_randomForest_(RF_models)_data_validation.txt
+# !!!! IMPORTANT: For this script to work the training dataset has to be called: 2_randomForest_(RF_models)_data.txt
+# !!!! IMPORTANT: For this script to work the test dataset has to be called: 2_randomForest_(RF_models)_data_validation.txt
 
 #---> DATA MANIPULATION: 
 
@@ -39,10 +39,10 @@ output <- "C:/Users/hhy270/Documents/GitHub/2018_Machine_Learning_MTX_treatment_
 # "Responder" and "Non_Responder". 
 # Rows: The different samples (each patient data).
 
-# See a_Toy_Data/2_randomForest_(RF_models)/2_randomForest_(RF_models)_toy_data.txt
+# See a_Data/2_randomForest_(RF_models)/2_randomForest_(RF_models)_data.txt
 
 lm_profiles <- read.table(
-  file = paste(input, "2_randomForest_(RF_models)_toy_data.txt", sep = ""),
+  file = paste(input, "2_randomForest_(RF_models)_data.txt", sep = ""),
   header = TRUE,
   row.names = 1, # Specify that the first column is row names. 
   sep = "\t")
@@ -76,7 +76,7 @@ n_three_DPA <- lm_profiles_scale[ , c(25:34, 56)]
 epa <- lm_profiles_scale[ , c(35:37, 56)]
 aa <- lm_profiles_scale[ , c(38:55, 56)]
 
-# VALIDATION SET:
+# TEST SET:
 
 # Data use to test the model (independent cohort)!
 
@@ -158,7 +158,7 @@ dev.off()
 
 #---> VALIDATION TEST:
 
-# "prediction" takes the created models and the validation dataset to try to predict which samples belongs to the
+# "prediction" takes the created models and the test dataset to try to predict which samples belongs to the
 # responder and non-responder. 
 
 pred_rf_lm_profiles <- as.data.frame(predict(rf_lm_profiles_final, val_lm_profiles_scale))

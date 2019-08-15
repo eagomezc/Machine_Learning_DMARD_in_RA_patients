@@ -22,8 +22,8 @@ library(ggplot2)
 input <- "C:/Users/hhy270/Documents/GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/a_Data/3_DGE_analysis_(Edge_R)/"
 output <- "C:/Users/hhy270/Documents/GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/c_Expected_Output/3_DGE_analysis_(Edge_R)/"
 
-# !!!! IMPORTANT: For this script to work the training dataset has to be called: 3_DGE_analysis_(Edge_R)_read_counts.txt
-# !!!! IMPORTANT: For this script to work the validation dataset has to be called: 3_DGE_analysis_(Edge_R)_class_reads.txt
+# !!!! IMPORTANT: For this script to work the read counts file has to be called: 3_DGE_analysis_(Edge_R)_read_counts.txt
+# !!!! IMPORTANT: For this script to work the classification file has to be called: 3_DGE_analysis_(Edge_R)_class_reads.txt
 
 #---> DATA LOAD: 
 
@@ -33,7 +33,7 @@ output <- "C:/Users/hhy270/Documents/GitHub/2018_Machine_Learning_MTX_treatment_
 # Columns: The different samples (each patient data).
 # Rows: The interested enzyme read counts for each patient. 
 
-# See a_Toy_Data/3_DGE_analysis_(Edge_R)/3_DGE_analysis_(Edge_R)_read_counts.txt
+# See a_Data/3_DGE_analysis_(Edge_R)/3_DGE_analysis_(Edge_R)_read_counts.txt
 
 counts_blood <- read.table(
   file = paste(input, "3_DGE_analysis_(Edge_R)_read_counts.txt", sep = ""),
@@ -46,7 +46,7 @@ counts_blood <- read.table(
 # The table consist in two columns: column "Samples" with the different sample IDs and the column "Response"
 # with information for each patient about whether they are responders or not. 
 
-# See a_Toy_Data/3_DGE_analysis_(Edge_R)/3_DGE_analysis_(Edge_R)_class_reads.txt
+# See a_Data/3_DGE_analysis_(Edge_R)/3_DGE_analysis_(Edge_R)_class_reads.txt
 
 classification_blood <- read.table(
   file = paste(input, "3_DGE_analysis_(Edge_R)_class_reads.txt", sep = ""), 
