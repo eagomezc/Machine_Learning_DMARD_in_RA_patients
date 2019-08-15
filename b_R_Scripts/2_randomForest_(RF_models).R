@@ -11,7 +11,8 @@
 #---> LIBRARY LOAD:
 
 library(randomForest)
-library("mltools")
+library(mltools)
+library(pROC)
 set.seed(415) # To get same results even with the random part.
 
 #---> INPUT AND OUTPUT:

@@ -89,7 +89,7 @@ design_edge_blood <- model.matrix(~classes_blood)
 
 DGE_file_blood_d <- estimateDisp(DGE_file_blood, design_edge_blood,  robust = TRUE)  
 
-# The quasi-likelihood method was used to calculated differences between the groups/
+# The quasi-likelihood method was used to calculated differences between the groups.
 
 fit_blood_r <- glmQLFit(DGE_file_blood_d, design_edge_blood) 
 lrt_blood <- glmQLFTest(fit_blood_r, coef = 2) # Coef = 2 specify comparison Non Responder vs Responder. 
