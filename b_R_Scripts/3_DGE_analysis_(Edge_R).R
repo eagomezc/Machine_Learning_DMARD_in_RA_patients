@@ -19,7 +19,7 @@ library(ggplot2)
 # In this section please specify where are the input files and where you want to save the output files.
 # In the input and output variable you can see what is the path expected from the user to write.
 
-input <- "C:/Users/hhy270/Documents/GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/a_Toy_Data/3_DGE_analysis_(Edge_R)/"
+input <- "C:/Users/hhy270/Documents/GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/a_Data/3_DGE_analysis_(Edge_R)/"
 output <- "C:/Users/hhy270/Documents/GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/c_Expected_Output/3_DGE_analysis_(Edge_R)/"
 
 # !!!! IMPORTANT: For this script to work the training dataset has to be called: 3_DGE_analysis_(Edge_R)_read_counts.txt

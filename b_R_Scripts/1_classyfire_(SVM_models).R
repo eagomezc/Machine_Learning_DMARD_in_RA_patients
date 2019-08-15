@@ -18,7 +18,7 @@ library("mltools")
 # In this section please specify where are the input files and where you want to save the output files.
 # In the input and output variable you can see what is the path expected from the user to write.
 
-input <- "C:/Users/hhy270/Documents/GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/a_Toy_Data/1_classyfire_(SVM_models)/"
+input <- "C:/Users/hhy270/Documents/GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/a_Data/1_classyfire_(SVM_models)/"
 output <- "C:/Users/hhy270/Documents/GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/c_Expected_Output/1_classyfire_(SVM_models)/"
 
 # !!!! IMPORTANT: For this script to work the training dataset has to be called: 1_classyfire_(SVM_models)_toy_data.txt
