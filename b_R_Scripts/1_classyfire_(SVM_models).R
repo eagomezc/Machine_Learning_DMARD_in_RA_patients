@@ -51,10 +51,10 @@ lm_profiles <- read.table(
 
 # by Substrates:
 
-dha <- lm_profiles[2:25, ]
-n_three_DPA <- lm_profiles[26:35, ]
-epa <- lm_profiles[36:38, ]
-aa <- lm_profiles[39:56, ]
+dha <- lm_profiles[2:24, ]
+n_three_DPA <- lm_profiles[25:34, ]
+epa <- lm_profiles[35:37, ]
+aa <- lm_profiles[38:55, ]
 
 # VALIDATION SET:
 
@@ -79,10 +79,10 @@ val_lm_profiles <- read.table(
 
 # by Substrates:
 
-val_dha <- val_lm_profiles[2:25, ]
-val_n_three_DPA <- val_lm_profiles[26:35, ]
-val_epa <- val_lm_profiles[36:38, ]
-val_aa <- val_lm_profiles[39:56, ]
+val_dha <- val_lm_profiles[2:24, ]
+val_n_three_DPA <- val_lm_profiles[25:34, ]
+val_epa <- val_lm_profiles[35:37, ]
+val_aa <- val_lm_profiles[38:55, ]
 
 #---> DATA PREPARATION TRAINING DATA:
 
@@ -112,6 +112,7 @@ colnames(explanatory) <- colnames(explanatorys)
 # Scale data prevents that the modelfrom being based on variables with high normal values.
 
 explanatory_scale <- scale(explanatory, center = FALSE, scale = TRUE)
+explanatory_scale[is.na(explanatory_scale)] <- 0
 
 #---> DATA PREPARATION TEST DATA:
 
@@ -137,6 +138,7 @@ colnames(val_explanatory) <- colnames(val_explanatorys)
 # transpose as well. 
 
 validation_scale <- scale(val_explanatory, center = FALSE, scale = TRUE) 
+validation_scale[is.na(validation_scale)] <- 0
 
 #---> MACHINE LEARNING (Classyfire R): 
 
@@ -167,7 +169,18 @@ getConfMatr(support_lmprofiles_scale) # Get a table of the consensus classificat
 # responder and non-responder. It creates a data frame with the identifications and % of accuracy. 
 
 prediction_validation <- cfPredict(support_lmprofiles_scale, validation_scale)
-names(prediction_validation) <- c("prediction")
+names(prediction_validation) <- c("prediction", "Coef Score")
+
+# For ROC curves we need the likehood of each sample to belong to one group of another. We add two new columns for 
+# that purpose:
+
+prediction_validation$Responder[prediction_validation$prediction == "Responder"] <- 
+  prediction_validation$`Coef Score`[prediction_validation$prediction == "Responder"]/100 
+
+prediction_validation$Responder[prediction_validation$prediction == "Non_Responder"] <- 
+  1 - (prediction_validation$`Coef Score`[prediction_validation$prediction == "Non_Responder"]/100)
+
+prediction_validation$Non_Responder <- 1 - prediction_validation$Responder
 
 # In order to further evaluate the predictivenss of this approach we next calculated  Matthews correlation 
 # coefficient (MCC), which represents the accuracy of the model at predicting outcome. Very helpful when you
@@ -175,11 +188,16 @@ names(prediction_validation) <- c("prediction")
 
 mcc_value = mcc(preds = prediction_validation$prediction, actuals = val_response$responses) # From the mltools package.
 
+# ROC curve calculation:
+
+roc_value = roc(val_response$responses, prediction_validation$Non_Responder)
+
 # Creates a table with all the models, the %CC and the MCC.
 
 accuracy_table <- data.frame(groups = "scalated lm profiles",
                              percentage_accuracy = getAvgAcc(support_lmprofiles_scale)$Test,
                              MCC = mcc_value,
+                             AUC = roc_value$auc,
                              stringsAsFactors = FALSE)
 
 # Save the models as an R object:
@@ -223,6 +241,7 @@ for (lm in 1:length(groups)) {
   colnames(transpose) <- colnames(t(groups[[lm]]))
   
   scale <- scale(transpose, center = FALSE, scale = TRUE) # All the model will use scale data
+  scale[is.na(scale)] <- 0
   
   # test dataset: 
   
@@ -231,6 +250,7 @@ for (lm in 1:length(groups)) {
   colnames(val_transpose) <- colnames(t(val_groups[[lm]]))
   
   val_scale <- scale(val_transpose, center = FALSE, scale = TRUE) # All the model will use scale data
+  val_scale[is.na(val_scale)] <- 0
   
   # Support Vector Machine Model:
   
@@ -239,15 +259,31 @@ for (lm in 1:length(groups)) {
   # Validation of the models:
   
   pred_val <- cfPredict(support_vm, val_scale)
-  names(pred_val) <- c("prediction")
+  names(pred_val) <- c("prediction", "Coef Score")
+  
+  pred_val$Responder[pred_val$prediction == "Responder"] <- 
+    pred_val$`Coef Score`[pred_val$prediction == "Responder"]/100 
+  
+  pred_val$Responder[pred_val$prediction == "Non_Responder"] <- 
+    1 - (pred_val$`Coef Score`[pred_val$prediction == "Non_Responder"]/100)
+  
+  pred_val$Non_Responder <- 1 - pred_val$Responder
+  
+  # MCC:
   
   mcc_val = mcc(preds = pred_val$prediction, actuals = val_response$responses)
   
+  # ROC curves: 
+  
+  roc_val = roc(val_response$responses, pred_val$Non_Responder)
+  
   average_right <- data.frame(groups = names(groups)[[lm]], 
                               percentage_accuracy = getAvgAcc(support_vm)$Test, 
-                              MCC= mcc_val) # Save %CC value.
+                              MCC = mcc_val,
+                              AUC = roc_val$auc,
+                              stringsAsFactors = FALSE) 
   
-  accuracy_table <- rbind(accuracy_table, average_right) # Append %CC and MCC to the accuracy table. 
+  accuracy_table <- rbind(accuracy_table, average_right) # Append %CC, AUC and MCC to the accuracy table. 
   
   # Save model as a R object. 
   
