@@ -303,6 +303,9 @@ for (lm in 1:length(groups)) {
 # Besides the functional models, the OUTPUT of this script is a table with Accuracy score of the model and the
 # validation of the model based on the MCC value. 
 
+accuracy_table[, c(2)] <- round(accuracy_table[, c(2)], digits = 0) 
+accuracy_table[, c(3, 4)] <- round(accuracy_table[, c(3, 4)], digits = 2) 
+
 write.table(accuracy_table, 
             file = paste(output, "1_accuracy_table.txt", sep = ""),
             sep = "\t",
