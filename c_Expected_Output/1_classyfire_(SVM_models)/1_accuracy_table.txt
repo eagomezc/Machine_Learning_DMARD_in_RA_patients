@@ -1,6 +1,6 @@
-groups	percentage_accuracy	MCC	AUC
-scalated lm profiles	63	0.42	0.73
-DHA	66	0.34	0.58
-n-3 DPA	68	0.35	0.72
-EPA	72	0.29	0.61
-AA	58	0.06	0.6
+groups	percentage_accuracy	sensitivity_validation	specificity_validation	AUC	sensitivity_evaluation	specificity_evaluation
+scalated lm profiles	61	0.63	0.54	0.53	0.94	0.05
+DHA	62	0.65	0.56	0.54	0.78	0.18
+n-3 DPA	61	0.63	0.54	0.66	0.94	0.23
+EPA	60	0.62	0.52	0.58	0.92	0.05
+AA	58	0.6	0.48	0.66	0.92	0.09

@@ -1,0 +1,8 @@
+groups	percentage_accuracy	sensitivity_validation	specificity_validation	TP_per	FP_per	TN_per	FN_per	AUC	sensitivity_evaluation	specificity_evaluation
+scalated lm profiles	73	0.87	0.55	87	45	55	13	0.72	0.58	0.64
+DHA	81	0.9	0.68	90	32	68	10	0.44	0.39	0.55
+n-3 DPA	69	0.83	0.5	83	50	50	17	0.58	0.78	0.32
+EPA	65	0.8	0.45	80	55	45	20	0.6	0.53	0.32
+AA	65	0.77	0.5	77	50	50	23	0.89	0.83	0.77
+RvD4 10S-17S-diHDPA 15R-LXA4 MaR1n-3 DPA	83	0.92	0.68	92	32	68	8	0.8	0.83	0.59
+RvD4 10S-17S-diHDPA 15R-LXA4 5S12S-diHETE 4-14-diHDHA MaR1n-3 DPA	86	0.94	0.73	94	27	73	6	0.79	0.87	0.64
