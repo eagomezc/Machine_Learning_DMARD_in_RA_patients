@@ -11,16 +11,16 @@
 #---> LIBRARY LOAD:
 
 library(classyfire)
-library(mltools)
 library(pROC)
+library(caret)
 
 #---> INPUT AND OUTPUT:
 
 # In this section please specify where are the input files and where you want to save the output files.
 # In the input and output variable you can see what is the path expected from the user to write.
 
-input <- "C:/Users/hhy270/Documents/GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/a_Data/1_classyfire_(SVM_models)/"
-output <- "C:/Users/hhy270/Documents/GitHub/2018_Machine_Learning_MTX_treatment_in_RA_patients/c_Expected_Output/1_classyfire_(SVM_models)/"
+input <- "../a_Data/1_classyfire_(SVM_models)/"
+output <- "../c_Expected_Output/1_classyfire_(SVM_models)/"
 
 # !!!! IMPORTANT: For this script to work the training dataset has to be called: 1_classyfire_(SVM_models)_data.txt
 # !!!! IMPORTANT: For this script to work the test dataset has to be called: 2_classyfire_(SVM_models)_data_validation.txt
@@ -161,7 +161,7 @@ ggEnsTrend(support_lmprofiles_scale, ylims = c(50,100))
 # Model accuracy: 
 
 getAvgAcc(support_lmprofiles_scale)$Test # Get the %CC (Overall percentage of correctly classified test objects)
-getConfMatr(support_lmprofiles_scale) # Get a table of the consensus classification of the best model. 
+conf_matrix <- as.data.frame(getConfMatr(support_lmprofiles_scale)) # Get a table of the consensus classification of the best model. 
 
 #---> MODEL VALIDATION: 
 
@@ -182,22 +182,26 @@ prediction_validation$Responder[prediction_validation$prediction == "Non_Respond
 
 prediction_validation$Non_Responder <- 1 - prediction_validation$Responder
 
-# In order to further evaluate the predictivenss of this approach we next calculated  Matthews correlation 
-# coefficient (MCC), which represents the accuracy of the model at predicting outcome. Very helpful when you
-# have imbalance data. 
-
-mcc_value = mcc(preds = prediction_validation$prediction, actuals = val_response$responses) # From the mltools package.
-
-# ROC curve calculation:
+# In order to further evaluate the predictivenss of this approach we next the ROC curves (AUC):
 
 roc_value = roc(val_response$responses, prediction_validation$Non_Responder)
+
+# Confusion Matrix for the validation:
+
+confusion_val <- confusionMatrix(factor(prediction_validation$prediction, levels = c("Responder", "Non_Responder")),
+                                 factor(val_response$responses, levels = c("Responder", "Non_Responder")))
+
+table_parameters <- as.data.frame(confusion_val$byClass)
 
 # Creates a table with all the models, the %CC and the MCC.
 
 accuracy_table <- data.frame(groups = "scalated lm profiles",
                              percentage_accuracy = getAvgAcc(support_lmprofiles_scale)$Test,
-                             MCC = mcc_value,
+                             sensitivity_validation = conf_matrix[4, 3]/100,
+                             specificity_validation = conf_matrix[1, 3]/100,
                              AUC = roc_value$auc,
+                             sensitivity_evaluation = table_parameters[1,1],
+                             specificity_evaluation = table_parameters[2,1],
                              stringsAsFactors = FALSE)
 
 # Save the models as an R object:
@@ -256,7 +260,9 @@ for (lm in 1:length(groups)) {
   
   support_vm <- cfBuild(scale, response_matrix, bootNum = 65, ensNum = 65, cpus = 4) # Creates model
   
-  # Validation of the models:
+  conf_matrix_all <- as.data.frame(getConfMatr(support_vm))
+  
+  # Evaluation of the models:
   
   pred_val <- cfPredict(support_vm, val_scale)
   names(pred_val) <- c("prediction", "Coef Score")
@@ -269,18 +275,24 @@ for (lm in 1:length(groups)) {
   
   pred_val$Non_Responder <- 1 - pred_val$Responder
   
-  # MCC:
-  
-  mcc_val = mcc(preds = pred_val$prediction, actuals = val_response$responses)
-  
   # ROC curves: 
   
   roc_val = roc(val_response$responses, pred_val$Non_Responder)
   
+  # Confusion Matrix for the validation:
+  
+  confusion_val_all <- confusionMatrix(factor(pred_val$prediction, levels = c("Responder", "Non_Responder")),
+                                   factor(val_response$responses, levels = c("Responder", "Non_Responder")))
+  
+  table_parameters_all <- as.data.frame(confusion_val_all$byClass)
+  
   average_right <- data.frame(groups = names(groups)[[lm]], 
                               percentage_accuracy = getAvgAcc(support_vm)$Test, 
-                              MCC = mcc_val,
+                              sensitivity_validation = conf_matrix_all[4, 3]/100,
+                              specificity_validation = conf_matrix_all[1, 3]/100,
                               AUC = roc_val$auc,
+                              sensitivity_evaluation = table_parameters_all[1,1],
+                              specificity_evaluation = table_parameters_all[2,1],
                               stringsAsFactors = FALSE) 
   
   accuracy_table <- rbind(accuracy_table, average_right) # Append %CC, AUC and MCC to the accuracy table. 
@@ -304,11 +316,13 @@ for (lm in 1:length(groups)) {
 # validation of the model based on the MCC value. 
 
 accuracy_table[, c(2)] <- round(accuracy_table[, c(2)], digits = 0) 
-accuracy_table[, c(3, 4)] <- round(accuracy_table[, c(3, 4)], digits = 2) 
+accuracy_table[, c(3:7)] <- round(accuracy_table[, c(3:7)], digits = 2) 
 
 write.table(accuracy_table, 
             file = paste(output, "1_accuracy_table.txt", sep = ""),
             sep = "\t",
             quote = FALSE,
             row.names = FALSE) 
+
+
 
