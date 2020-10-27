@@ -105,7 +105,7 @@ More details about how this files are generated can be seen in the comments of e
 
  If you use these codes for your research please cite these paper:
  
- *To be provided*
+*Gomez, E.A., Colas, R.A., Souza, P.R. et al. Blood pro-resolving mediators are linked with synovial pathology and are predictive of DMARD responsiveness in rheumatoid arthritis. Nat Commun 11, 5420 (2020). https://doi.org/10.1038/s41467-020-19176-z*
  
  
 
