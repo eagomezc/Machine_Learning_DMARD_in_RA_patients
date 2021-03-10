@@ -79,9 +79,9 @@ This folder contains the scripts used to create the support vector machine and r
 
 The scripts are: 
 
-**1_classyfire_(SVM_models).R**: Using a training dataset, this script creates the machine learning models used to predict the response to DMARD treatment in rheumatoid arthritis patient. The script works with the package **classyfire** that uses support vector machine and bootstrapping for the model creation. It also uses the a test cohort to validate the models and estimate the MCC value. 
+**1_classyfire_(SVM_models).R**: Using a training dataset, this script creates the machine learning models used to predict the response to DMARD treatment in rheumatoid arthritis patient. The script works with the package **classyfire** that uses support vector machine and bootstrapping for the model creation. It also uses the a test cohort to validate the models and estimate the area under the receiver operating characteristic curves (AUC). 
 
-**2_randomForest_(RF_models).R**: Using a training dataset, this script creates the machine learning models used to predict the response to DMARD treatment in rheumatoid arthritis patient. The script works with the package **randomForest** that uses random forests and bootstrapping for the model creation. Besides that, estimate the **importance** of each lipid mediator in the improvement of the model's accuracy. Finally, it also uses the test cohort to evaluate the models and estimate the area under the receiver operating characteristic curves (AUC). 
+**2_randomForest_(RF_models).R**: Using a training dataset, this script creates the machine learning models used to predict the response to DMARD treatment in rheumatoid arthritis patient. The script works with the package **randomForest** that uses random forests and bootstrapping for the model creation. Besides that, estimate the **importance** of each lipid mediator in the improvement of the model's accuracy. Finally, it also uses the test cohort to evaluate the models and estimate the AUC. 
 
 **3_DGE_analysis_(Edge_R).R**: Using RNA-seq raw read counts, this scripts performs differential gene expression analysis using the package **Edge R**, that uses the quasi-likelihood method to identify differences in the expression levels of specific genes between the DMARD responder and Non Responder rheumatoid arthritis patients. It also creates violin plots as a way to visualize the different gene expression levels. 
 
@@ -93,7 +93,7 @@ This folder contains, separated by subfolders, the different expected outputs th
 
 The subfolders are:
 
-**1_classyfire_(SVM_models)**: The expected results from this script are a tab-delimited file containing a table with the model's names, their accuracy percentages and their MCC values after validation with the test cohort; and the different models saved as an R object that can be used in the future.  
+**1_classyfire_(SVM_models)**: The expected results from this script are a tab-delimited file containing a table with the model's names, their accuracy percentages and their AUC values after validation with the test cohort; and the different models saved as an R object that can be used in the future.  
 
 **2_randomForest_(RF_models)**: The expected results from this script are a tab-delimited file containing a table with the model's names, their accuracy percentages and their AUC values after evaluation with the test cohort; the different models saved as an R object that can be used in the future; and pdf files that contains plots associated with the performance of the models and the importance of each lipid mediator in the construction of the models. 
 
