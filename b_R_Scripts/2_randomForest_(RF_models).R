@@ -98,7 +98,7 @@ val_lm_profiles <- read.table(
   row.names = 1, # Specify that the first column is row names. 
   sep = "\t")
 
-val_lm_profiles_scale <- as.data.frame(scale(val_lm_profiles[, -1], center = FALSE, scale = TRUE))
+val_lm_profiles_scale <- as.data.frame(scale(val_lm_profiles[, -1], center = TRUE, scale = TRUE))
 val_lm_profiles_scale[is.na(val_lm_profiles_scale)] <- 0
 names(val_lm_profiles_scale) <- make.names(names(val_lm_profiles_scale))
 
