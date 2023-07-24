@@ -49,7 +49,7 @@ lm_profiles <- read.table(
   row.names = 1, # Specify that the first column is row names. 
   sep = "\t")
 
-lm_profiles_scale <- as.data.frame(scale(lm_profiles[, -1], center = FALSE, scale = TRUE))
+lm_profiles_scale <- as.data.frame(scale(lm_profiles[, -1], center = TRUE, scale = TRUE))
 
 # If all the values from one column are the same, the scalation will give you NA. For those cases, to avoid errors,
 # replace the NA for zeros. 
